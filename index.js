@@ -26,7 +26,7 @@ metaInf.file('container.xml', xml([
 ], { declaration: true }));
 
 
-var opf = [
+var opf =
   { 
     'package': [
       { _attr: { xmlns: "http://www.idpf.org/2007/opf", "unique-identifier": "uuid_id", version: "2.0" } },
@@ -58,12 +58,39 @@ var opf = [
       }
     ]
   }
-];
+;
 
 console.log(xml(opf, { declaration: true } ));
 
 zip.file('out.opf', xml(opf, { declaration: true } ));
 zip.file('content.html', '<html>This is the e-book content</html>');
+
+var toc = [
+  { ncx: [
+      { _attr: { 'xmlns': 'http://www.daisy.org/z3986/2005/ncx/', 'version': '2005-1', 'xml:lang': 'no-NB'} },
+      { head: 
+        [
+          { meta: { _attr: { name: 'dtb:uid', content: id } } },
+          { meta: { _attr: { name: 'dtb:depth', content: "1" } } },
+          { meta: { _attr: { name: 'dtb:generator', content: "epub-compiler" } } },
+          { meta: { _attr: { name: 'dtb:totalPageCount', content: "0" } } },
+          { meta: { _attr: { name: 'dtb:maxPageNumber', content: "0" } } }
+        ]
+      },
+      { docTitle: 
+        [ 
+          { text: 'Test publication' } 
+        ] 
+      },
+      { navMap: 
+        [
+        ]
+      }
+    ]
+  }
+]
+
+console.log(xml(toc, { declaration: true } ));
 
 /*zip.file('toc.ncx', '<?xml version=\'1.0\' encoding=\'utf-8\'?> \
 <ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en"> \
