@@ -92,21 +92,6 @@ var toc = [
 
 console.log(xml(toc, { declaration: true } ));
 
-/*zip.file('toc.ncx', '<?xml version=\'1.0\' encoding=\'utf-8\'?> \
-<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en"> \
-  <head> \
-    <meta content="e63567de-7e37-4bd0-b478-acbeb6e1a3a5" name="dtb:uid"/> \
-    <meta content="1" name="dtb:depth"/> \
-    <meta content="calibre (3.12.0)" name="dtb:generator"/> \
-    <meta content="0" name="dtb:totalPageCount"/> \
-    <meta content="0" name="dtb:maxPageNumber"/> \
-  </head> \
-  <docTitle> \
-    <text>Snorre Sturlasøns Kongesagaer</text> \
-  </docTitle> \
-  <navMap/> \
-</ncx>');*/
-
 zip
 .generateNodeStream({type:'nodebuffer',streamFiles:true})
 .pipe(fs.createWriteStream('out.zip'))
