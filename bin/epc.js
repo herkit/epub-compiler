@@ -1,5 +1,6 @@
 #! /usr/bin/env node
 
+var path = require('path');
 var Parser = require('commandline-parser').Parser,
     parser = new Parser({
         name : "epc",
@@ -7,7 +8,7 @@ var Parser = require('commandline-parser').Parser,
         extra : ''
     });
 
-var resolve = require('path').resolve;
+var resolve = path.resolve;
 
 var compiler = require('../lib/compiler');
 
@@ -19,6 +20,8 @@ var fs = require('fs');
 fs.readFile(projectfile, 'utf8', function (err, data) {
     if (err) throw err; // we'll not consider error handling for now
     var project = JSON.parse(data);
+    var pathInfo = path.parse(projectfile);
+    project.output = { filename: pathInfo.name + '.epub' };
     compiler.compile(project);
 });
 
