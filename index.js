@@ -5,10 +5,25 @@ var xml = require('xml');
 var uuidv4 = require('uuid/v4');
 
 zip.file('mimetype', 'application/epub+zip', { compression: 'STORE'});
-var metaInf = zip.folder('META-INF');
 
 var id = uuidv4();
 
+var project = {
+  meta: {
+    title: "Test publication",
+    author: "Henrik Grotle"
+  },
+  content: [
+    {
+      type: 'content',
+      name: 'content.html',
+      mediaType: 'application/xhtml+xml',
+      content: '<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><body>This is the e-book content</body></html>'
+    }
+  ]
+}
+
+var metaInf = zip.folder('META-INF');
 metaInf.file('container.xml', xml([
   {
     container: [
@@ -25,11 +40,20 @@ metaInf.file('container.xml', xml([
   }
 ], { declaration: true }));
 
-var opfxml = xml(generateOpf());
+
+project.content.forEach(function(content, i) {
+  if (content.id === undefined)
+    content.id = 'id' + (i + 1);
+});
+
+var opfxml = xml(generateOpf(project));
 console.log(opfxml, { declaration: true } );
 
 zip.file('content.opf', opfxml);
-zip.file('content.html', '<html>This is the e-book content</html>');
+
+project.content.forEach(function(item, i) {
+  zip.file(item.name, item.content);  
+})
 
 var toc = xml(generateTOC(), { declaration: true } );
 
@@ -39,22 +63,22 @@ zip.file('toc.ncx', toc);
 
 zip
 .generateNodeStream({type:'nodebuffer',streamFiles:true})
-.pipe(fs.createWriteStream('out.zip'))
+.pipe(fs.createWriteStream('out.epub'))
 .on('finish', function () {
     console.log("out.epub written.");
 });
 
 
-function generateOpf() {
+function generateOpf(project) {
   var opf = 
     { 
       'package': [
-        { _attr: { xmlns: "http://www.idpf.org/2007/opf", "unique-identifier": "uuid_id", version: "2.0" } },
+        { _attr: { xmlns: "http://www.idpf.org/2007/opf", 'xmlns:dc': 'http://purl.org/dc/elements/1.1/', 'unique-identifier': 'uuid_id', version: '2.0' } },
         { metadata: [
-            { 'dc:title': 'Test publication' },
+            { 'dc:title': project.meta.title || '[no title]' },
             { 'dc:creator': [
-                { _attr: { 'opf:role': 'aut', 'opf:file-as': 'Grotle, Henrik' }},
-                "Henrik Grotle"
+                { _attr: { 'opf:role': 'aut', 'opf:file-as': project.meta.author || '[unknown]' }},
+                project.meta.author || '{unknown}'
               ] 
             },
             { 'dc:identifier': [
@@ -68,11 +92,18 @@ function generateOpf() {
           ]
         },
         {
-          manifest: [
-            { item: { _attr: { id: 'id1', href: 'content.html', 'media-type': 'application/xhtml+xml' } } }
-          ]
+          manifest: 
+            project
+            .content
+            .map(function(content, i) {
+              return { item: { _attr: { id: content.id, href: content.name, 'media-type': content.mediaType }}}
+            })
+            .concat(
+              [ { item: { _attr: { id: 'ncx', href: 'toc.ncx', 'media-type': 'application/x-dtbncx+xm'}}}]
+            )
         },
         { spine: [
+            { _attr: { toc: 'ncx' } },
             { itemref: { _attr: { idref: 'id1' } } }
           ]
         }
@@ -85,7 +116,7 @@ function generateOpf() {
 function generateTOC() {
   return [
     { ncx: [
-        { _attr: { 'xmlns': 'http://www.daisy.org/z3986/2005/ncx/', 'version': '2005-1', 'xml:lang': 'no-NB'} },
+        { _attr: { 'xmlns': 'http://www.daisy.org/z3986/2005/ncx/', 'version': '2005-1'/*, 'xml:lang': 'no-NB'*/} },
         { head: 
           [
             { meta: { _attr: { name: 'dtb:uid', content: id } } },
