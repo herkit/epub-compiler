@@ -4,6 +4,7 @@
   "description": "A compiler for generating epub books from source",
   "main": "index.js",
   "dependencies": {
+    "commandline-parser": "^0.4.0",
     "jszip": "^3.1.5",
     "uuid": "^3.1.0",
     "xml": "^1.0.1"
@@ -11,6 +12,9 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "epc": "./bin/epc.js"
   },
   "keywords": [
     "epub"
