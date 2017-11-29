@@ -6,6 +6,7 @@
   "dependencies": {
     "commandline-parser": "^0.4.0",
     "jszip": "^3.1.5",
+    "mime-types": "^2.1.17",
     "uuid": "^3.1.0",
     "xml": "^1.0.1"
   },
@@ -14,7 +15,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
-    "epc": "./bin/epc.js"
+    "epc": "./bin/epc.js",
+    "epp": "./bin/epp.js"
   },
   "keywords": [
     "epub"
