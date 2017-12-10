@@ -21,6 +21,7 @@ fs.readFile(projectfile, 'utf8', function (err, data) {
     if (err) throw err; // we'll not consider error handling for now
     var project = JSON.parse(data);
     var pathInfo = path.parse(projectfile);
+    project.basePath = path.dirname(projectfile);
     project.output = { filename: pathInfo.name + '.epub' };
     compiler.compile(project);
 });
